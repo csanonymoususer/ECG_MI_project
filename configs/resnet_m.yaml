@@ -1,0 +1,66 @@
+experiment:
+  name: "resnet_ecg_m"
+  seed: 42
+  device: "cuda"   # or "cpu"
+
+# ========================
+# DATA
+# ========================
+data:
+  data_path: "data/"
+  input_type: "ecg"   # ecg | multimodal
+  use_data: "M" # G (all) | F(only female) | M(only male)
+  use_tabular: false
+  tabular_features: None # may be set to None
+
+  # sampling_rate: 100
+  num_leads: 12
+  max_length: 1000
+
+  batch_size: 64
+  num_workers: 4
+
+# ========================
+# MODEL
+# ========================
+model:
+  name: "resnet"   # fcn | resnet
+
+# ========================
+# TRAINING
+# ========================
+training:
+  epochs: 25
+
+  optimizer: "adam"
+  lr: 0.001
+  weight_decay: 1e-4
+
+  scheduler: "cosine"   # none | step | cosine
+  step_size: 10
+  gamma: 0.5
+
+  loss: "bce"
+  pos_weight: 2.0 # can be set to 1
+
+early_stopping:
+    enabled: true
+    monitor: "val_auc"   # val_auc | val_loss
+    mode: "max"           # min (for loss), max (for auc)
+    patience: 10
+
+# ========================
+# METRICS
+# ========================
+metrics:
+  threshold: 0.5
+
+# ========================
+# LOGGING
+# ========================
+logging:
+  log_dir: "logs/"
+checkpoints:
+  save_every: 1
+  checkpoint_dir: "checkpoints/"
+  checkpoint_path_for_load: "../checkpoints/resnet_ecg_m/model_epoch8.pt"
